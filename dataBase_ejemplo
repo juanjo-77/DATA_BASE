@@ -194,48 +194,82 @@ INSERT INTO order_items (order_id, product_id, quantity, unit_price) VALUES
 ('aaaa1111-bbbb-cccc-dddd-eeeeeeee1111', '97068931-4d44-4fe8-a2fe-6351e135dc3c', 1, 120000.00),
 ('aaaa2222-bbbb-cccc-dddd-eeeeeeee2222', '5cb3e058-1336-47a5-bf79-585742de7db7', 1, 50000.00);
 
- 
-SELECT SUM(total) AS total_revenue
-FROM orders;
-
---FORMA 2
 
 
 
-SELECT 
+-- Ejercicio 1
+select SUM(oi.quantity * p.price)
+from nicolas.orders o
+inner join nicolas.order_items oi 
+on oi.order_id = o.id 
+inner join nicolas.products p 
+on oi.product_id = p.id;
+
+
+
+
+-- Ejercio 2
+select
     u.name,
     u.email,
-    SUM(o.total) AS valor
-FROM users u
-JOIN orders o ON u.id = o.user_id
-GROUP BY u.id, u.name, u.email
-ORDER BY valor DESC;
+    SUM(oi.quantity * p.price)
+from nicolas.orders o
+inner join nicolas.order_items oi 
+on oi.order_id = o.id 
+inner join nicolas.products p 
+on oi.product_id = p.id
+inner join nicolas.users u 
+on u.id = o.user_id
+group by u.name,u.email;
 
 
 
-SELECT 
+-- Ejercicio 3
+select
     u.name,
-    COUNT(o.id) AS number_of_orders
-FROM users u
-LEFT JOIN orders o ON u.id = o.user_id
-GROUP BY u.id, u.name
-ORDER BY number_of_orders DESC;
+    u.email,
+    count(o.id)
+from nicolas.orders o
+inner join nicolas.order_items oi 
+on oi.order_id = o.id 
+inner join nicolas.products p 
+on oi.product_id = p.id
+inner join nicolas.users u 
+on u.id = o.user_id
+group by u.name,u.email;
 
 
 
 
-SELECT AVG(total) 
-FROM orders;
+-- Ejercicio 4
+select round(AVG(oi.quantity * p.price))
+from nicolas.orders o
+inner join nicolas.order_items oi 
+on oi.order_id = o.id 
+inner join nicolas.products p 
+on oi.product_id = p.id;
 
 
-SELECT 
-    o.id AS order_id,
-    u.name AS user_name,
-    COUNT(oi.product_id) AS number_of_products
-FROM orders o
-JOIN users u ON o.user_id = u.id
-JOIN order_items oi ON o.id = oi.order_id
-GROUP BY o.id, u.name
-HAVING COUNT(oi.product_id) > 1
-ORDER BY number_of_products DESC;
+
+
+-- Ejercicio 5
+select o.id,
+        sum(oi.quantity)
+from nicolas.orders o
+inner join nicolas.order_items oi 
+on oi.order_id = o.id 
+inner join nicolas.products p 
+on oi.product_id = p.id
+group by o.id, oi.quantity 
+having sum(oi.quantity) > 1;
+
+
+
+
+
+-- Ejercicio 6
+select p.name, p.category, p.active from products p
+left join order_items oi 
+on oi.product_id = p.id
+where oi.product_id is null;
 
