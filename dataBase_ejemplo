@@ -274,8 +274,3 @@ on oi.product_id = p.id
 where oi.product_id is null;
 
 
-
-
-
-
-bueno lo que yo necesito es que con esa información me ayudes a crear este software, la idea es crear una base de datos de prueba, además de una página web con login y todo en tailwind css, que me expliques como utilizar n8n y hacer este proyecto a la perfección; "MediGuide": Asistente de Protocolos Médicos y Bienestar Diferencia: Foco en salud. La Base de Datos Local contiene el historial del usuario o protocolos específicos de una clínica. Uso de IA: El usuario pregunta "Siento un dolor punzante en el tobillo". El bot primero revisa si el usuario tuvo una lesión previa en la DB local y luego busca en la web tratamientos actuales o estudios recientes para dar una recomendación (siempre con un disclaimer médico). listo mira lo que quiero es: que la info la pueda sacar de una base de datos o sino la ecuentra ahi que la busque en la web, que este software se conecte con otra base de datos la cual contenga todos los registros médicos de los usuarios y en base a esto lo tenga en cuenta para dar su consulta, además de que sea adaptable a otra base de datos ya que lo que queremos con este proyecto es enseñarlo y luego venderlo a algun hospital
