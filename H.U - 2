@@ -1,0 +1,195 @@
+
+
+-- =====================================================
+-- 1️⃣ Crear esquema y usarlo
+-- =====================================================
+CREATE SCHEMA mi_esquema;
+SET search_path TO mi_esquema;
+
+-- =====================================================
+-- 2️⃣ Tablas
+-- =====================================================
+CREATE TABLE estudiantes (
+    id_estudiante SERIAL PRIMARY KEY,
+    nombre_completo VARCHAR(150) NOT NULL,
+    correo_electronico VARCHAR(120) NOT NULL UNIQUE,
+    genero VARCHAR(20) NOT NULL,
+    identificacion VARCHAR(20) NOT NULL UNIQUE,
+    carrera VARCHAR(100) NOT NULL,
+    fecha_nacimiento DATE NOT NULL,
+    fecha_ingreso DATE NOT NULL,
+    CHECK (fecha_ingreso >= fecha_nacimiento)
+);
+
+CREATE TABLE docentes (
+    id_docente SERIAL PRIMARY KEY,
+    nombre_completo VARCHAR(150) NOT NULL,
+    correo_institucional VARCHAR(120) NOT NULL UNIQUE,
+    departamento_academico VARCHAR(100) NOT NULL,
+    anios_experiencia INT NOT NULL CHECK (anios_experiencia >= 0)
+);
+
+CREATE TABLE cursos (
+    id_curso SERIAL PRIMARY KEY,
+    nombre VARCHAR(120) NOT NULL,
+    codigo VARCHAR(20) NOT NULL UNIQUE,
+    creditos INT NOT NULL CHECK (creditos > 0),
+    semestre INT NOT NULL CHECK (semestre BETWEEN 1 AND 12),
+    id_docente INT NOT NULL,
+    FOREIGN KEY (id_docente)
+        REFERENCES docentes(id_docente)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE
+);
+
+CREATE TABLE inscripciones (
+    id_inscripcion SERIAL PRIMARY KEY,
+    id_estudiante INT NOT NULL,
+    id_curso INT NOT NULL,
+    fecha_inscripcion DATE NOT NULL,
+    calificacion_final DECIMAL(4,2),
+    CHECK (calificacion_final BETWEEN 0 AND 10),
+    FOREIGN KEY (id_estudiante)
+        REFERENCES estudiantes(id_estudiante)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    FOREIGN KEY (id_curso)
+        REFERENCES cursos(id_curso)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+
+-- =====================================================
+-- 3️⃣ Datos de ejemplo
+-- =====================================================
+INSERT INTO estudiantes
+(nombre_completo, correo_electronico, genero, identificacion, carrera, fecha_nacimiento, fecha_ingreso)
+VALUES
+('Ana López','ana@email.com','F','1001','Ingeniería','2002-05-10','2021-02-01'),
+('Carlos Ruiz','carlos@email.com','M','1002','Derecho','2001-08-15','2020-02-01'),
+('María Torres','maria@email.com','F','1003','Ingeniería','2003-01-20','2022-02-01'),
+('Luis Gómez','luis@email.com','M','1004','Medicina','2000-09-12','2019-02-01'),
+('Sofía Martínez','sofia@email.com','F','1005','Administración','2002-12-05','2021-02-01');
+
+INSERT INTO docentes
+(nombre_completo, correo_institucional, departamento_academico, anios_experiencia)
+VALUES
+('Dr. Pérez','perez@uni.edu','Ingeniería',10),
+('Dra. Gómez','gomez@uni.edu','Ciencias Sociales',7),
+('Dr. Ramírez','ramirez@uni.edu','Salud',3);
+
+INSERT INTO cursos
+(nombre, codigo, creditos, semestre, id_docente)
+VALUES
+('Base de Datos','BD101',4,2,1),
+('Derecho Civil','DC201',3,1,2),
+('Anatomía','AN301',5,3,3),
+('Programación','PR102',4,2,1);
+
+INSERT INTO inscripciones
+(id_estudiante, id_curso, fecha_inscripcion, calificacion_final)
+VALUES
+(1,1,'2024-02-01',8.5),
+(1,4,'2024-02-01',9.0),
+(2,2,'2024-02-01',7.5),
+(3,1,'2024-02-01',8.0),
+(3,4,'2024-02-01',9.2),
+(4,3,'2024-02-01',6.8),
+(5,1,'2024-02-01',7.9),
+(5,4,'2024-02-01',8.7);
+
+-- =====================================================
+-- 4️⃣ Consultas de ejemplo
+-- =====================================================
+-- Estudiantes con sus cursos e inscripciones
+SELECT e.nombre_completo, c.nombre AS curso, i.calificacion_final
+FROM inscripciones i
+JOIN estudiantes e ON i.id_estudiante = e.id_estudiante
+JOIN cursos c ON i.id_curso = c.id_curso;
+
+-- Cursos con docentes con más de 5 años de experiencia
+SELECT c.nombre AS curso, d.nombre_completo AS docente
+FROM cursos c
+JOIN docentes d ON c.id_docente = d.id_docente
+WHERE d.anios_experiencia > 5;
+
+-- Promedio por curso
+SELECT c.nombre AS curso, AVG(i.calificacion_final) AS promedio
+FROM inscripciones i
+JOIN cursos c ON i.id_curso = c.id_curso
+GROUP BY c.nombre;
+
+-- Estudiantes en más de un curso
+SELECT e.nombre_completo, COUNT(*) AS total_cursos
+FROM inscripciones i
+JOIN estudiantes e ON i.id_estudiante = e.id_estudiante
+GROUP BY e.nombre_completo
+HAVING COUNT(*) > 1;
+
+-- Agregar columna estado_academico
+ALTER TABLE estudiantes ADD COLUMN estado_academico VARCHAR(20);
+
+-- Cursos con más de 2 estudiantes
+SELECT c.nombre, COUNT(*) AS total_estudiantes
+FROM inscripciones i
+JOIN cursos c ON i.id_curso = c.id_curso
+GROUP BY c.nombre
+HAVING COUNT(*) > 2;
+
+-- =====================================================
+-- 5️⃣ Subconsultas y funciones
+-- =====================================================
+-- Estudiantes con promedio > promedio general
+SELECT e.nombre_completo, AVG(i.calificacion_final) AS promedio_estudiante
+FROM inscripciones i
+JOIN estudiantes e ON i.id_estudiante = e.id_estudiante
+GROUP BY e.nombre_completo
+HAVING AVG(i.calificacion_final) > (SELECT AVG(calificacion_final) FROM inscripciones);
+
+-- Carreras con estudiantes en cursos semestre >= 2
+SELECT DISTINCT carrera
+FROM estudiantes
+WHERE id_estudiante IN (
+    SELECT i.id_estudiante
+    FROM inscripciones i
+    JOIN cursos c ON i.id_curso = c.id_curso
+    WHERE c.semestre >= 2
+);
+
+-- Indicadores agregados
+SELECT
+    ROUND(AVG(calificacion_final),2) AS promedio_general,
+    SUM(calificacion_final) AS suma_notas,
+    MAX(calificacion_final) AS nota_maxima,
+    MIN(calificacion_final) AS nota_minima,
+    COUNT(*) AS total_inscripciones
+FROM inscripciones;
+
+-- =====================================================
+-- 6️⃣ Vista historial académico
+-- =====================================================
+CREATE OR REPLACE VIEW vista_historial_academico AS
+SELECT 
+    e.nombre_completo AS estudiante,
+    c.nombre AS curso,
+    d.nombre_completo AS docente,
+    c.semestre,
+    i.calificacion_final
+FROM inscripciones i
+JOIN estudiantes e ON i.id_estudiante = e.id_estudiante
+JOIN cursos c ON i.id_curso = c.id_curso
+JOIN docentes d ON c.id_docente = d.id_docente;
+
+-- Dar solo lectura a usuario actual
+GRANT SELECT ON vista_historial_academico TO current_user;
+REVOKE INSERT, UPDATE, DELETE ON inscripciones FROM current_user;
+
+-- =====================================================
+-- 7️⃣ Transacción de ejemplo
+-- =====================================================
+BEGIN;
+UPDATE inscripciones SET calificacion_final = 9.5 WHERE id_inscripcion = 1;
+SAVEPOINT punto1;
+UPDATE inscripciones SET calificacion_final = 5.0 WHERE id_inscripcion = 2;
+ROLLBACK TO punto1;
+COMMIT;
