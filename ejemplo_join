@@ -48,3 +48,30 @@ SELECT doctor.nombre, especialidad.nombre AS especialidad
 FROM doctor
 FULL JOIN especialidad
 ON doctor.especialidad_id = especialidad.id;
+
+
+
+INFORMACION IMPORTANTE DEL ON - GRUP BY - ORDER BY
+
+| Palabra SQL       | Para qué sirve                                    | Ejemplo corto              |
+| ----------------- | ------------------------------------------------- | -------------------------- |
+| **ON**            | Indica **cómo unir tablas** en un JOIN            | `ON d.id = e.doctor_id`    |
+| **GROUP BY**      | **Agrupa filas iguales** para contar, sumar, etc. | `GROUP BY especialidad_id` |
+| **ORDER BY ASC**  | Ordena de **menor → mayor**                       | `ORDER BY nombre ASC`      |
+| **ORDER BY DESC** | Ordena de **mayor → menor**                       | `ORDER BY salario DESC`    |
+
+
+
+💡 Mini-ejemplo con todo junto
+
+SELECT e.nombre, COUNT(*) AS total
+FROM doctor d
+JOIN especialidad e ON d.especialidad_id = e.id
+GROUP BY e.nombre
+ORDER BY total DESC;
+
+
+👉 Une tablas
+👉 Agrupa por especialidad
+👉 Cuenta doctores
+👉 Ordena del mayor al menor
