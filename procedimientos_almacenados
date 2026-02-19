@@ -1,0 +1,66 @@
+-- es como una funcion la cual podemos llamar cuando la necesitamos
+
+CREATE OR REPLACE PROCEDURE saludar(nombre TEXT)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RAISE NOTICE 'Hola %', nombre;
+END;
+$$;
+
+CALL saludar('juan')
+
+
+
+-- ejemplo 
+
+CREATE TABLE pedidos (
+    id SERIAL PRIMARY KEY,
+    cliente TEXT NOT NULL,
+    monto NUMERIC(10,2) NOT NULL,
+    estado TEXT DEFAULT 'pendiente',
+    creado_en TIMESTAMP DEFAULT NOW()
+);
+
+
+
+INSERT INTO pedidos (cliente, monto)
+VALUES 
+('Ana', 100.00),
+('Carlos', 250.50),
+('Laura', 80.00);
+
+select * from pedidos
+
+
+-- Crear un procedimiento llamado 'confirmar_pedido', o reemplazarlo si ya existe
+CREATE OR REPLACE PROCEDURE confirmar_pedido(p_id INT)   
+
+LANGUAGE plpgsql       -- Indica que el lenguaje usado es PL/pgSQL, que permite lógica procedural
+AS $$      -- inicia el bloque de codigo
+DECLARE      -- Declaración de variables locales al procedimiento
+    v_monto NUMERIC;     -- Variable para almacenar el monto del pedido
+BEGIN  -- inicio del bloque ejecutable
+
+    -- Obtener monto
+    SELECT monto INTO v_monto  --coje el monto de 
+    FROM pedidos               -- pedidos
+    WHERE id = p_id;  --busca el pedido por el id
+
+    -- Lógica de negocio
+    IF v_monto > 200 THEN    -- Si el monto es mayor a 200,
+        UPDATE pedidos
+        SET estado = 'prioritario'   -- marcar el pedido como 'prioritario'
+        WHERE id = p_id;
+    ELSE
+        UPDATE pedidos
+        SET estado = 'pendiente'
+        WHERE id = p_id;
+    END IF;    -- finaliza el bloque del if
+
+    COMMIT;  -- guarda los cambios en la base de datos
+END;   --fin del bloque ejecutable
+$$;  -- cierre del bloque del procedimiento 
+
+
+CALL confirmar_pedido(2);
