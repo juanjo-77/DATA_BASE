@@ -106,3 +106,13 @@ Agregaciones
     • CHECK: asegura valores lógicos.
     • FOREIGN KEY: relaciones entre tablas.
     • ON DELETE CASCADE/RESTRICT: control de borrado de registros relacionados.
+
+
+
+    | Tipo           | Qué hace                                                                   | Ejemplo sencillo                                 |
+| -------------- | -------------------------------------------------------------------------- | ------------------------------------------------ |
+| **INNER JOIN** | Solo trae los registros que **coinciden en ambas tablas**                  | `SELECT * FROM A INNER JOIN B ON A.id = B.a_id;` |
+| **LEFT JOIN**  | Trae **todos los de la tabla izquierda** + los que coinciden de la derecha | `SELECT * FROM A LEFT JOIN B ON A.id = B.a_id;`  |
+| **RIGHT JOIN** | Trae **todos los de la tabla derecha** + los que coinciden de la izquierda | `SELECT * FROM A RIGHT JOIN B ON A.id = B.a_id;` |
+| **FULL JOIN**  | Trae **todos de ambas tablas**, aunque no coincidan                        | `SELECT * FROM A FULL JOIN B ON A.id = B.a_id;`  |
+
