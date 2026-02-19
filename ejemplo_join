@@ -53,22 +53,25 @@ ON doctor.especialidad_id = especialidad.id;
 
 INFORMACION IMPORTANTE DEL ON - GRUP BY - ORDER BY
 
-| Palabra SQL       | Para qué sirve                                    | Ejemplo corto              |
-| ----------------- | ------------------------------------------------- | -------------------------- |
-| **ON**            | Indica **cómo unir tablas** en un JOIN            | `ON d.id = e.doctor_id`    |
-| **GROUP BY**      | **Agrupa filas iguales** para contar, sumar, etc. | `GROUP BY especialidad_id` |
-| **ORDER BY ASC**  | Ordena de **menor → mayor**                       | `ORDER BY nombre ASC`      |
-| **ORDER BY DESC** | Ordena de **mayor → menor**                       | `ORDER BY salario DESC`    |
+| Palabra SQL       | Para qué sirve                                       | Ejemplo corto                     |
+| ----------------- | ---------------------------------------------------- | --------------------------------- |
+| **ON**            | Condición para unir tablas en un JOIN                | `ON d.id = e.doctor_id`           |
+| **GROUP BY**      | Agrupa filas iguales para contar, sumar, etc.        | `GROUP BY especialidad_id`        |
+| **ORDER BY ASC**  | Ordena de menor a mayor                              | `ORDER BY nombre ASC`             |
+| **ORDER BY DESC** | Ordena de mayor a menor                              | `ORDER BY salario DESC`           |
+| **LIMIT**         | Limita la cantidad de filas que devuelve la consulta | `LIMIT 5` → solo devuelve 5 filas |
 
 
 
 💡 Mini-ejemplo con todo junto
 
-SELECT e.nombre, COUNT(*) AS total
+SELECT e.nombre AS especialidad, COUNT(*) AS total
 FROM doctor d
 JOIN especialidad e ON d.especialidad_id = e.id
 GROUP BY e.nombre
-ORDER BY total DESC;
+ORDER BY total DESC
+LIMIT 2;
+
 
 
 👉 Une tablas
