@@ -1,0 +1,60 @@
+eventos automaticos, ejecuta algo cuando pasa un evento especifico   (ADD EVENT LISTENER) de postgres
+
+
+temp (significa que algo en temporal)
+
+create temp table #appointments_by_speciality(
+  name varchar (225),
+  total int
+);
+
+insert into appointments_by_spciality (name, total)
+
+---------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------
+
+CONECTAR EXPRESS
+
+PUERTOS RESERVADOS DEL SISTEMA OPERATIVO (1 - 999)
+
+DRIVER = npm install ...
+
+.js
+import  {Poll}  from "pg"; 79.6k (gzipped: 23.9k)
+
+
+
+| .env                  | .env.template            |
+| --------------------- | ------------------------ |
+| Contiene datos reales | Contiene solo las llaves |
+| No se sube a GitHub   | Sí se sube               |
+| Información sensible  | Solo estructura          |
+
+
+template
+
+DB_HOST=
+DB_PORT=
+DB_NAME=
+DB_USER=
+DB_PASSWORD=
+
+APP_PORT=
+
+
+env
+
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=mi_base
+DB_USER=postgres
+DB_PASSWORD=123456
+
+APP_PORT=3000
+
+-----------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------
+
+API postman
+
+
