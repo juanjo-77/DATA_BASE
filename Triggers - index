@@ -1,0 +1,93 @@
+4️⃣ TRIGGERS en PostgreSQL
+
+Un trigger ejecuta algo automáticamente cuando pasa algo.
+
+🔹 Ejemplo: actualizar fecha automáticamente
+
+
+CREATE OR REPLACE FUNCTION update_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER set_timestamp
+BEFORE UPDATE ON users
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at();
+
+
+👉 Cada vez que haces UPDATE → actualiza updated_at solo.
+
+-------------------------------------------------------------------------------------------
+
+5️⃣ ÍNDICES (MUY IMPORTANTE)
+
+Si no usas índices → tu app será lenta.
+
+CREATE INDEX idx_users_email ON users(email);
+
+📌 Usa índices en:
+
+foreign keys
+
+columnas que usas en WHERE
+
+columnas que usas en JOIN
+
+Para ver el plan de ejecución:
+
+EXPLAIN ANALYZE SELECT * FROM users WHERE email='test@test.com';
+
+
+--------------------------------------------------------------------------------------------
+
+
+6️⃣ Cosas avanzadas que DEBES saber
+🔹 Transacciones
+BEGIN;
+
+INSERT INTO orders (...) VALUES (...);
+UPDATE users SET balance = balance - 100 WHERE id = 1;
+
+COMMIT;
+
+Si algo falla:
+
+ROLLBACK;
+
+
+
+
+🔹 Vistas
+CREATE VIEW user_orders AS
+SELECT u.name, o.total
+FROM users u
+JOIN orders o ON u.id = o.user_id;
+
+🔹 Funciones
+CREATE FUNCTION get_user_orders(uid INT)
+RETURNS TABLE(total NUMERIC) AS $$
+BEGIN
+  RETURN QUERY
+  SELECT total FROM orders WHERE user_id = uid;
+END;
+$$ LANGUAGE plpgsql;
+
+🔹 Constraints
+PRIMARY KEY
+FOREIGN KEY
+UNIQUE
+NOT NULL
+CHECK
+
+Ejemplo:
+
+ALTER TABLE users
+ADD CONSTRAINT unique_email UNIQUE(email);
+
+-------------------------------------------------------------------------------------------
+
+
